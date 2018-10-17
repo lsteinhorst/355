@@ -13,6 +13,9 @@ try:
     from OpenGL.GL import glMatrixMode
     from OpenGL.GL import GL_MODELVIEW
     from OpenGL.GL import GL_PROJECTION
+    from OpenGL.GL import glPushMatrix
+    from OpenGL.GL import glPopMatrix
+    from OpenGL.GL import glutTimerFunc
 except:
     print("ERROR: PyOpenGL not installed properly. ")
 
@@ -23,6 +26,9 @@ y_coord = -3
 z_coord  = -20
 angle = 0
 ortho = False
+x_house = 10
+y_house = 0
+z_house = 10
 
 def init():
     glClearColor (0.0, 0.0, 0.0, 0.0)
@@ -80,6 +86,108 @@ def drawHouse ():
     glVertex3f(0, 8, -5)
     glEnd()
 
+def drawCar():
+    glLineWidth(2.5)
+    glColor3f(0.0, 1.0, 0.0)
+    glBegin(GL_LINES)
+    #Front Side
+    glVertex3f(-3, 2, 2)
+    glVertex3f(-2, 3, 2)
+    glVertex3f(-2, 3, 2)
+    glVertex3f(2, 3, 2)
+    glVertex3f(2, 3, 2)
+    glVertex3f(3, 2, 2)
+    glVertex3f(3, 2, 2)
+    glVertex3f(3, 1, 2)
+    glVertex3f(3, 1, 2)
+    glVertex3f(-3, 1, 2)
+    glVertex3f(-3, 1, 2)
+    glVertex3f(-3, 2, 2)
+    #Back Side
+    glVertex3f(-3, 2, -2)
+    glVertex3f(-2, 3, -2)
+    glVertex3f(-2, 3, -2)
+    glVertex3f(2, 3, -2)
+    glVertex3f(2, 3, -2)
+    glVertex3f(3, 2, -2)
+    glVertex3f(3, 2, -2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(-3, 1, -2)
+    glVertex3f(-3, 1, -2)
+    glVertex3f(-3, 2, -2)
+    #Connectors
+    glVertex3f(-3, 2, 2)
+    glVertex3f(-3, 2, -2)
+    glVertex3f(-2, 3, 2)
+    glVertex3f(-2, 3, -2)
+    glVertex3f(2, 3, 2)
+    glVertex3f(2, 3, -2)
+    glVertex3f(3, 2, 2)
+    glVertex3f(3, 2, -2)
+    glVertex3f(3, 1, 2)
+    glVertex3f(3, 1, -2)
+    glVertex3f(-3, 1, 2)
+    glVertex3f(-3, 1, -2)
+    glEnd()
+
+def drawTire():
+    glLineWidth(2.5)
+    glColor3f(0.0, 0.0, 1.0)
+    glBegin(GL_LINES)
+    #Front Side
+    glVertex3f(-1, .5, .5)
+    glVertex3f(-.5, 1, .5)
+    glVertex3f(-.5, 1, .5)
+    glVertex3f(.5, 1, .5)
+    glVertex3f(.5, 1, .5)
+    glVertex3f(1, .5, .5)
+    glVertex3f(1, .5, .5)
+    glVertex3f(1, -.5, .5)
+    glVertex3f(1, -.5, .5)
+    glVertex3f(.5, -1, .5)
+    glVertex3f(.5, -1, .5)
+    glVertex3f(-.5, -1, .5)
+    glVertex3f(-.5, -1, .5)
+    glVertex3f(-1, -.5, .5)
+    glVertex3f(-1, -.5, .5)
+    glVertex3f(-1, .5, .5)
+    #Back Side
+    glVertex3f(-1, .5, -.5)
+    glVertex3f(-.5, 1, -.5)
+    glVertex3f(-.5, 1, -.5)
+    glVertex3f(.5, 1, -.5)
+    glVertex3f(.5, 1, -.5)
+    glVertex3f(1, .5, -.5)
+    glVertex3f(1, .5, -.5)
+    glVertex3f(1, -.5, -.5)
+    glVertex3f(1, -.5, -.5)
+    glVertex3f(.5, -1, -.5)
+    glVertex3f(.5, -1, -.5)
+    glVertex3f(-.5, -1, -.5)
+    glVertex3f(-.5, -1, -.5)
+    glVertex3f(-1, -.5, -.5)
+    glVertex3f(-1, -.5, -.5)
+    glVertex3f(-1, .5, -.5)
+    #Connectors
+    glVertex3f(-1, .5, .5)
+    glVertex3f(-1, .5, -.5)
+    glVertex3f(-.5, 1, .5)
+    glVertex3f(-.5, 1, -.5)
+    glVertex3f(.5, 1, .5)
+    glVertex3f(.5, 1, -.5)
+    glVertex3f(1, .5, .5)
+    glVertex3f(1, .5, -.5)
+    glVertex3f(1, -.5, .5)
+    glVertex3f(1, -.5, -.5)
+    glVertex3f(.5, -1, .5)
+    glVertex3f(.5, -1, -.5)
+    glVertex3f(-.5, -1, .5)
+    glVertex3f(-.5, -1, -.5)
+    glVertex3f(-1, -.5, .5)
+    glVertex3f(-1, -.5, -.5)
+    glEnd()
+
 def initHouse():
     print("in init")
     glMatrixMode(GL_PROJECTION)
@@ -99,6 +207,9 @@ def display():
     global z_coord
     global angle
     global ortho
+    global x_house
+    global y_house
+    global z_house
 
 
     glClear (GL_COLOR_BUFFER_BIT)
@@ -112,20 +223,58 @@ def display():
     glRotated(angle % 360, 0, 1, 0)
     glTranslated(x_coord ,y_coord ,z_coord )
 
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
+    drawHouse()
 
-    if ortho:
-        glOrtho(-20, 20, -20, 0, 0, 10000)#         ASK ART WHAT HE DID HERE ALSO!!!
-    else:
-        gluPerspective(60, 1, 2, 200)
+    glTranslated(15, 0, 0)
 
+    drawHouse()
 
+    glTranslated(15, 0, 0)
+
+    drawHouse()
+
+    glRotated(180, 0, 1, 0)
+    glTranslated(0,0,-30)
+
+    drawHouse()
+
+    glTranslated(15,0,0)
+
+    drawHouse()
+
+    glTranslated(15,0,0)
 
     drawHouse()
 
 
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+
+    if ortho:
+        glOrtho(-20, 20, -20, 20, 0, 10000)
+    else:
+        gluPerspective(60, 1, 2, 200)
+
+
+    #glTranslated
+    drawTire()
+    drawCar()
+
+
+
     glFlush()
+
+def timer():
+    global x_coord
+    global y_coord
+    global z_coord
+    global angle
+    global ortho
+
+    glPopMatrix()
+    glRotated(1,0,0,1)
+    glPushMatrix()
+
 
 
 def keyboard(key, x, y):
@@ -135,6 +284,7 @@ def keyboard(key, x, y):
     global z_coord
     global angle
     global ortho
+
 
     if key == chr(27):
         import sys
@@ -148,19 +298,19 @@ def keyboard(key, x, y):
         ang = (angle % 360)
         ang = ang*m.pi / 180
 
-        x_coord -= m.cos(ang)
-        z_coord  -= m.sin(ang)
+        x_coord += m.cos(ang)
+        z_coord  += m.sin(ang)
 
     if key == b'd':
         #glTranslated(1,0,0)
         ang = (angle % 360)
         ang = ang*m.pi / 180
 
-        x_coord  += m.cos(ang)
-        z_coord  += m.sin(ang)
+        x_coord  -= m.cos(ang)
+        z_coord  -= m.sin(ang)
 
     if key == b'w':
-        #glTranslated(0,0,1)     ASK ART WHAT HE DID HERE
+        #glTranslated(0,0,1)
         ang = (angle % 360)
         ang = ang*m.pi / 180
 
@@ -220,4 +370,5 @@ glutCreateWindow (b'OpenGL Lab')
 init ()
 glutDisplayFunc(display)
 glutKeyboardFunc(keyboard)
+glutTimerFunc(100,timer,null)
 glutMainLoop()

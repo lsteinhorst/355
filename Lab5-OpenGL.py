@@ -15,7 +15,7 @@ try:
     from OpenGL.GL import GL_PROJECTION
     from OpenGL.GL import glPushMatrix
     from OpenGL.GL import glPopMatrix
-    from OpenGL.GL import glutTimerFunc
+    #from OpenGL.GL import glutTimerFunc
 except:
     print("ERROR: PyOpenGL not installed properly. ")
 
@@ -26,9 +26,10 @@ y_coord = -3
 z_coord  = -20
 angle = 0
 ortho = False
-x_house = 10
-y_house = 0
-z_house = 10
+x_car = 10
+y_car = 0
+z_car = 15
+angle_car = 0
 
 def init():
     glClearColor (0.0, 0.0, 0.0, 0.0)
@@ -75,6 +76,7 @@ def drawHouse ():
     glVertex3f(1, 0, 5)
     #Roof
     glVertex3f(-5, 5, -5)
+
     glVertex3f(0, 8, -5)
     glVertex3f(0, 8, -5)
     glVertex3f(5, 5, -5)
@@ -200,6 +202,13 @@ def initHouse():
     # angle = 0
     # ortho = False
 
+def tire():
+    translate(1,0,1)
+    drawTire()
+    glPopMatrix()
+    glPushMatrix()
+
+
 
 def display():
     global x_coord
@@ -207,9 +216,10 @@ def display():
     global z_coord
     global angle
     global ortho
-    global x_house
-    global y_house
-    global z_house
+    global x_car
+    global y_car
+    global z_car
+    global angle_car
 
 
     glClear (GL_COLOR_BUFFER_BIT)
@@ -223,6 +233,40 @@ def display():
     glRotated(angle % 360, 0, 1, 0)
     glTranslated(x_coord ,y_coord ,z_coord )
 
+    # drawHouse()
+    #
+    # glTranslated(15, 0, 0)
+    #
+    # drawHouse()
+    #
+    # glTranslated(15, 0, 0)
+    #
+    # drawHouse()
+    #
+    # glRotated(180, 0, 1, 0)
+    # glTranslated(0,0,-30)
+    #
+    # drawHouse()
+    #
+    # glTranslated(15,0,0)
+    #
+    # drawHouse()
+    #
+    # glTranslated(15,0,0)
+    #
+    # drawHouse()
+
+
+    glMatrixMode(GL_PROJECTION)
+    glLoadIdentity()
+
+    if ortho:
+        glOrtho(-20, 20, -20, 20, 0, 10000)
+    else:
+        gluPerspective(60, 1, 2, 200)
+
+
+    glMatrixMode(GL_MODELVIEW)
     drawHouse()
 
     glTranslated(15, 0, 0)
@@ -247,33 +291,62 @@ def display():
     drawHouse()
 
 
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-
-    if ortho:
-        glOrtho(-20, 20, -20, 20, 0, 10000)
-    else:
-        gluPerspective(60, 1, 2, 200)
-
-
-    #glTranslated
-    drawTire()
+    glTranslated(x_car,y_car,z_car)
     drawCar()
+    glPushMatrix()
+
+    #glRotated(angle_car,0,0,1)
+    glTranslate(1,0,1)
+    glRotated(angle_car,0,0,1)
+    drawTire()
+    glPopMatrix()
+    glPushMatrix()
+
+    #glRotated(angle_car,0,0,1)
+    glTranslate(1,0,-1)
+    glRotated(angle_car,0,0,1)
+    drawTire()
+    glPopMatrix()
+    glPushMatrix()
+
+    #glRotated(angle_car,0,0,1)
+    glTranslate(-1,0,-1)
+    glRotated(angle_car,0,0,1)
+    drawTire()
+    glPopMatrix()
+    glPushMatrix()
+
+    #glRotated(angle_car,0,0,1)
+    glTranslate(-1,0,1)
+    glRotated(angle_car,0,0,1)
+    drawTire()
+    glPopMatrix()
+
+
+
+
+    #drawCar()
 
 
 
     glFlush()
 
-def timer():
+def timer(x):
     global x_coord
     global y_coord
     global z_coord
     global angle
     global ortho
+    global x_car
+    global y_car
+    global z_car
+    global angle_car
 
-    glPopMatrix()
-    glRotated(1,0,0,1)
-    glPushMatrix()
+    x_car -= 1
+    angle_car += 30
+    glutPostRedisplay()
+    glutTimerFunc(250,timer,0)
+
 
 
 
@@ -284,6 +357,10 @@ def keyboard(key, x, y):
     global z_coord
     global angle
     global ortho
+    global x_car
+    global y_car
+    global z_car
+    global angle_car
 
 
     if key == chr(27):
@@ -349,6 +426,10 @@ def keyboard(key, x, y):
         y_coord  = -3
         z_coord  = -20
         angle = 0
+        x_car = 10
+        y_car = 0
+        z_car = 10
+        angle_car = 0
 
     if key == b'o':
         #glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0)  flips the house around
@@ -370,5 +451,5 @@ glutCreateWindow (b'OpenGL Lab')
 init ()
 glutDisplayFunc(display)
 glutKeyboardFunc(keyboard)
-glutTimerFunc(100,timer,null)
+glutTimerFunc(250,timer,0)
 glutMainLoop()

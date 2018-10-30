@@ -1,6 +1,7 @@
 # Import a library of functions called 'pygame'
 import pygame
-from math import pi
+import math
+import numpy as np
 
 class Point:
 	def __init__(self,x,y):
@@ -165,6 +166,24 @@ def loadTire():
 
     return tire
 
+def house(x,y,z,rot):
+	temphouse = loadHouse();
+	newhouse = []
+	for line in range(len(temphouse)):
+		start = np.array([temphouse[line].start.x, temphouse[line].start.y, temphouse[line].start.z, 1])
+		rotmatrix = np.array([[math.cos(rot),0,math.sin(rot),0],[0,1,0,0],[-math.sin(rot),0,math.cos(rot),0],[0,0,0,1]])
+		transS = rotmatrix*start
+		transmatrix =  np.array([[1,0,0,x],[0,1,0,y],[0,0,1,z],[0,0,0,1]])
+		rotTransS = transmatrix*transS
+		end = np.array([temphouse[line].end.x, temphouse[line].end.y, temphouse[line].end.z, 1])
+		transE = np.array([[math.cos(rot),0,math.sin(rot),0],[0,1,0,0],[-math.sin(rot),0,math.cos(rot),0],[0,0,0,1]])*end
+		rotTransE = np.array([[1,0,0,x],[0,1,0,y],[0,0,1,z],[0,0,0,1]])*transE
+		#print(rotTransE)
+		newhouse.append([rotTransS,rotTransE])
+		#print(newhouse)
+		#break;
+	return newhouse
+
 
 # Initialize the game engine
 pygame.init()
@@ -187,7 +206,15 @@ done = False
 clock = pygame.time.Clock()
 start = Point(0.0,0.0)
 end = Point(0.0,0.0)
-linelist = loadHouse()
+#do object to world here- and store lines as numpy arrays
+
+
+
+linelist = house(0,-3,-20,0)
+print(linelist)
+
+
+
 
 #Loop until the user clicks the close button.
 while not done:
@@ -216,7 +243,7 @@ while not done:
 
 	for s in linelist:
 		#BOGUS DRAWING PARAMETERS SO YOU CAN SEE THE HOUSE WHEN YOU START UP
-		pygame.draw.line(screen, BLUE, (20*s.start.x+200, -20*s.start.y+200), (20*s.end.x+200, -20*s.end.y+200))
+		pygame.draw.line(screen, BLUE, (20*s[0][0]+200, -20*s[0][1]+200), (20*s[1][0]+200, -20*s[1][1]+200))
 
 	# Go ahead and update the screen with what we've drawn.
 	# This MUST happen after all the other drawing commands.
